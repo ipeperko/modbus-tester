@@ -33,8 +33,7 @@ void client_session::set_response_timeout(unsigned milliseconds)
 
 mb_reg_vector client_session::read_holding_registers(int addr, int size)
 {
-    mb_reg_vector data;
-    data.resize(size);
+    mb_reg_vector data(size);
     int rc = modbus_read_registers(ctx, addr, size, &data[0]);
     if (rc < 0) {
         on_error("Modbus read holding registers failed");
@@ -44,8 +43,7 @@ mb_reg_vector client_session::read_holding_registers(int addr, int size)
 
 mb_reg_vector client_session::read_input_registers(int addr, int size)
 {
-    mb_reg_vector data;
-    data.resize(size);
+    mb_reg_vector data(size);
     int rc = modbus_read_input_registers(ctx, addr, size, &data[0]);
     if (rc < 0) {
         on_error("Modbus read input registers failed");
@@ -55,8 +53,7 @@ mb_reg_vector client_session::read_input_registers(int addr, int size)
 
 mb_bit_vector client_session::read_coils(int addr, int size)
 {
-    mb_bit_vector data;
-    data.resize(size);
+    mb_bit_vector data(size);
     int rc = modbus_read_bits(ctx, addr, size, &data[0]);
     if (rc < 0) {
         on_error("Modbus read coils failed");
@@ -66,8 +63,7 @@ mb_bit_vector client_session::read_coils(int addr, int size)
 
 mb_bit_vector client_session::read_discrete_inputs(int addr, int size)
 {
-    mb_bit_vector data;
-    data.resize(size);
+    mb_bit_vector data(size);
     int rc = modbus_read_input_bits(ctx, addr, size, &data[0]);
     if (rc < 0) {
         on_error("Modbus read input bits failed");
