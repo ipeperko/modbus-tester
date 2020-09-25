@@ -1,5 +1,6 @@
 #include "log_widget.h"
 #include <QDateTime>
+#include <QMenu>
 
 namespace {
 QString timeString(std::chrono::system_clock::time_point tp, bool millis=true)
@@ -24,6 +25,8 @@ QString timeString(std::chrono::system_clock::time_point tp, bool millis=true)
 log_widget::log_widget(QWidget *parent)
     : QListWidget(parent)
 {
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, &QListWidget::customContextMenuRequested, this, &log_widget::show_context_menu);
 }
 
 void log_widget::append_item(QListWidgetItem* item, const QString &msg)
@@ -56,3 +59,22 @@ void log_widget::scroll_to_bottom()
         scrollToItem(it);
     }
 }
+
+void log_widget::erase_logs()
+{
+    while (count()) {
+        auto* item = takeItem(count()-1);
+        delete item;
+    }
+}
+
+void log_widget::show_context_menu(const QPoint& pos)
+{
+    QPoint global_pos = mapToGlobal(pos);
+
+    QMenu menu;
+    menu.addAction("Erase logs", this, &log_widget::erase_logs);
+
+    menu.exec(global_pos);
+}
+

@@ -72,6 +72,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="radioButton_RTU">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>RTU</string>
           </property>
