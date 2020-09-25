@@ -1,13 +1,22 @@
 #ifndef MODBUS_TESTER_MB_TESTER_COMMON_H
 #define MODBUS_TESTER_MB_TESTER_COMMON_H
 
-#include <QPushButton>
 #include <stdexcept>
 #include <vector>
 #include <string>
+#include <QPushButton>
+#include <QListWidgetItem>
 
 using mb_reg_vector = std::vector<uint16_t>;
 using mb_bit_vector = std::vector<uint8_t>;
+
+enum class mb_dropdown_data_index_t : int
+{
+    holding_registers = 0,
+    input_registers,
+    coils,
+    discrete_inputs
+};
 
 //
 // Modbus exception
@@ -54,6 +63,24 @@ public:
         setText(active ? "Disconnect" : "Connect");
         setIcon(active ? QIcon(":/img/ico_stop.png") : QIcon(":/img/ico_start.png"));
     }
+};
+
+//
+// Client log list widget item
+//
+class client_log_widget_item : public QListWidgetItem
+{
+public:
+    client_log_widget_item(QListWidget *parent, mb_dropdown_data_index_t role, int addr, int num)
+        : QListWidgetItem(parent)
+        , role(role)
+        , addr(addr)
+        , num(num)
+    {}
+
+    mb_dropdown_data_index_t role;
+    int addr;
+    int num;
 };
 
 #endif //MODBUS_TESTER_MB_TESTER_COMMON_H

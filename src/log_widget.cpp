@@ -1,4 +1,5 @@
 #include "log_widget.h"
+#include "mb_tester_common.h"
 #include <QDateTime>
 #include <QMenu>
 
@@ -70,11 +71,22 @@ void log_widget::erase_logs()
 
 void log_widget::show_context_menu(const QPoint& pos)
 {
+    QMenu menu;
     QPoint global_pos = mapToGlobal(pos);
 
-    QMenu menu;
+    // Run again action
+    if (auto* item = itemAt(pos)) {
+        if (auto* cit = dynamic_cast<client_log_widget_item*>(item)) {
+            menu.addAction("Run again", this, [this, cit]() {
+                emit item_action(cit);
+            });
+        }
+    }
+
+    // Erase logs action
     menu.addAction("Erase logs", this, &log_widget::erase_logs);
 
+    // Show menu
     menu.exec(global_pos);
 }
 

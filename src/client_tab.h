@@ -19,15 +19,7 @@ class client_tab : public QWidget
 {
     Q_OBJECT
 public:
-    enum class mb_data_index_t : int
-    {
-        holding_registers = 0,
-        input_registers,
-        coils,
-        discrete_inputs
-    };
-
-    static const char* data_index_str(mb_data_index_t type);
+    static const char* data_index_str(mb_dropdown_data_index_t type);
 
     client_tab(QWidget* parent = nullptr);
     ~client_tab() override;
@@ -45,7 +37,7 @@ private slots:
     void data_read();
     void data_write();
     void check_socket();
-    void append_log(bool write, mb_data_index_t cmd, int addr, int size);
+    void append_log(bool write, mb_dropdown_data_index_t cmd, int addr, int size);
     void append_log_msg(const QString& msg);
     void append_log_error(const QString& msg);
 
@@ -56,21 +48,6 @@ private:
 
 signals:
     void connection_status_changed(bool active);
-};
-
-class client_log_widget_item : public QListWidgetItem
-{
-public:
-    client_log_widget_item(QListWidget *parent, client_tab::mb_data_index_t role, int addr, int num)
-        : QListWidgetItem(parent)
-        , role(role)
-        , addr(addr)
-        , num(num)
-    {}
-
-    client_tab::mb_data_index_t role;
-    int addr;
-    int num;
 };
 
 #endif //MODBUS_TESTER_CLIENT_TAB_H

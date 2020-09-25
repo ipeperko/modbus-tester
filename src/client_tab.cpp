@@ -5,16 +5,16 @@
 #include <QDateTime>
 #include <QDebug>
 
-const char* client_tab::data_index_str(mb_data_index_t type)
+const char* client_tab::data_index_str(mb_dropdown_data_index_t type)
 {
     switch (type) {
-        case mb_data_index_t::holding_registers:
+        case mb_dropdown_data_index_t::holding_registers:
             return "holding registers";
-        case mb_data_index_t::input_registers:
+        case mb_dropdown_data_index_t::input_registers:
             return "input registers";
-        case mb_data_index_t::coils:
+        case mb_dropdown_data_index_t::coils:
             return "coils";
-        case mb_data_index_t::discrete_inputs:
+        case mb_dropdown_data_index_t::discrete_inputs:
             return "discrete inputs";
         default:
             return "";
@@ -112,8 +112,8 @@ void client_tab::connect_clicked()
 
 void client_tab::data_type_changed()
 {
-    auto type = static_cast<mb_data_index_t>(ui->comboBox_DataType->currentIndex());
-    bool read_only = type == mb_data_index_t::input_registers || type == mb_data_index_t::discrete_inputs;
+    auto type = static_cast<mb_dropdown_data_index_t>(ui->comboBox_DataType->currentIndex());
+    bool read_only = type == mb_dropdown_data_index_t::input_registers || type == mb_dropdown_data_index_t::discrete_inputs;
 
     ui->pushButton_WriteData->setEnabled(!read_only);
 }
@@ -171,19 +171,19 @@ void client_tab::validate_table_cell(QTableWidgetItem* item)
     if (!item || item->text().isEmpty())
         return;
 
-    auto type = static_cast<mb_data_index_t>(ui->comboBox_DataType->currentIndex());
+    auto type = static_cast<mb_dropdown_data_index_t>(ui->comboBox_DataType->currentIndex());
     bool ok;
     int val = item->text().toInt(&ok);
 
     switch (type) {
-        case mb_data_index_t::coils:
-        case mb_data_index_t::discrete_inputs:
+        case mb_dropdown_data_index_t::coils:
+        case mb_dropdown_data_index_t::discrete_inputs:
             if (!ok || (val != 0 && val != 1)) {
                 item->setText("0");
             }
             break;
-        case mb_data_index_t::holding_registers:
-        case mb_data_index_t::input_registers:
+        case mb_dropdown_data_index_t::holding_registers:
+        case mb_dropdown_data_index_t::input_registers:
             if (!ok || (val < std::numeric_limits<int16_t>::min()) || (val > std::numeric_limits<uint16_t>::max())) {
                 item->setText("0");
             }
@@ -200,7 +200,7 @@ void client_tab::data_read()
     }
 
     try {
-        auto type = static_cast<mb_data_index_t>(ui->comboBox_DataType->currentIndex());
+        auto type = static_cast<mb_dropdown_data_index_t>(ui->comboBox_DataType->currentIndex());
         int addr = ui->spinBox_DataAddress->value();
         int n = ui->spinBox_DataSize->value();
 
@@ -212,25 +212,25 @@ void client_tab::data_read()
         append_log(false, type, addr, n);
 
         switch (type) {
-            case mb_data_index_t::holding_registers:
+            case mb_dropdown_data_index_t::holding_registers:
             {
                 auto res = client_->read_holding_registers(addr, n);
                 populate_table(addr, res);
             }
                 break;
-            case mb_data_index_t::input_registers:
+            case mb_dropdown_data_index_t::input_registers:
             {
                 auto res = client_->read_input_registers(addr, n);
                 populate_table(addr, res);
             }
                 break;
-            case mb_data_index_t::coils:
+            case mb_dropdown_data_index_t::coils:
             {
                 auto res = client_->read_coils(addr, n);
                 populate_table(addr, res);
             }
                 break;
-            case mb_data_index_t::discrete_inputs:
+            case mb_dropdown_data_index_t::discrete_inputs:
             {
                 auto res = client_->read_discrete_inputs(addr, n);
                 populate_table(addr, res);
@@ -253,7 +253,7 @@ void client_tab::data_write()
     }
 
     try {
-        auto type = static_cast<mb_data_index_t>(ui->comboBox_DataType->currentIndex());
+        auto type = static_cast<mb_dropdown_data_index_t>(ui->comboBox_DataType->currentIndex());
         int addr = ui->spinBox_DataAddress->value();
         int n = ui->spinBox_DataSize->value();
 
@@ -265,7 +265,7 @@ void client_tab::data_write()
         append_log(true, type, addr, n);
 
         switch (type) {
-            case mb_data_index_t::holding_registers:
+            case mb_dropdown_data_index_t::holding_registers:
             {
                 mb_reg_vector data;
 
@@ -282,7 +282,7 @@ void client_tab::data_write()
                 client_->write_holding_registers(addr, data);
             }
                 break;
-            case mb_data_index_t::coils:
+            case mb_dropdown_data_index_t::coils:
             {
                 mb_bit_vector data;
 
@@ -320,7 +320,7 @@ void client_tab::check_socket()
     }
 }
 
-void client_tab::append_log(bool write, mb_data_index_t cmd, int addr, int size)
+void client_tab::append_log(bool write, mb_dropdown_data_index_t cmd, int addr, int size)
 {
     QString s = write ? "WRITE " : "READ  ";
     s += "[";
