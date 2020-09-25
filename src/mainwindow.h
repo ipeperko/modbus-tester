@@ -1,9 +1,7 @@
 #ifndef MODBUS_TESTER_MAINWINDOW_H
 #define MODBUS_TESTER_MAINWINDOW_H
 
-#include "client_session.h"
 #include <QMainWindow>
-#include <memory>
 
 class QTableWidgetItem;
 
@@ -25,8 +23,8 @@ private:
     void update_tab_status(int index, bool active);
 
     Ui::MainWindow* ui {nullptr};
-    client_tab* client;
-    server_tab* server;
+    client_tab* client {nullptr};
+    server_tab* server {nullptr};
 };
 
 
