@@ -36,7 +36,7 @@ void server_session::start_server()
             task();
         }
         catch (std::exception& e) {
-            on_task_error(e.what());
+            emit message_emitter.error_message(e.what());
         }
     });
 }
@@ -59,7 +59,6 @@ void server_session::stop_server()
     }
 }
 
-
 void server_session::task()
 {
     qDebug() << "Server task started";
@@ -72,17 +71,17 @@ void server_session::task()
     while (do_run) {
         qDebug() << "Server accepting...";
         int rc = modbus_tcp_accept(ctx, &socket);
-        qDebug() << "Server accept code : " << rc;
+        qDebug() << "Server accepted - code : " << rc;
+
         if (rc < 0) {
             qWarning() << "TCP accept failed";
             std::this_thread::yield();
             continue;
         }
 
-        int sent;
+        int nsend;
 
         do {
-            sent = 0;
             std::vector<uint8_t> query(MODBUS_TCP_MAX_ADU_LENGTH, 0);
 
             qDebug() << "Server receiving...";
@@ -94,46 +93,37 @@ void server_session::task()
             }
 
             query.resize(nrcv);
-            sent = modbusServerReply(query);
+            nsend = server_reply(query);
 
-            if (sent < 0) {
+            if (nsend < 0) {
                 qWarning() << "Modbus sending error - %s" << modbus_strerror(errno);
             } else {
-                qDebug() << "Replying to request bytes : " << sent;
+                qDebug() << "Replying to request bytes : " << nsend;
             }
 
-        } while(sent > 0);
+        } while(nsend > 0);
     }
 
     qDebug() << "Server task finished";
 }
 
-int server_session::modbusServerReply(const std::vector<uint8_t>& query)
+int server_session::server_reply(const std::vector<uint8_t>& query)
 {
-    int sent = 0;
     unsigned unitid = query[6];
     unsigned cmd = query[7];
 
     {
         std::ostringstream os;
         os << "Received cmd " << cmd << " (0x" << std::hex << cmd << std::dec <<
-        ") from device id 0x" << std::hex << unitid << std::dec <<
-        " (num bytes : " << query.size() << ") : ";
+            ") from device id 0x" << std::hex << unitid << std::dec <<
+            " (num bytes : " << query.size() << ") :";
 
         for (auto it : query) {
-            os << std::hex << static_cast<int>(it) << std::dec << " ";
+            os << " " << std::hex << static_cast<int>(it) << std::dec;
         }
 
-        //qDebug() << os.str().c_str();
         emit message_emitter.message(os.str().c_str());
     }
 
-    sent = modbus_reply(ctx, &query[0], query.size(), mb_map);
-    return sent;
-}
-
-void server_session::on_task_error(std::string const& what)
-{
-    //qWarning() << msg;
-    emit message_emitter.message(what.c_str());
+    return modbus_reply(ctx, &query[0], query.size(), mb_map);
 }
