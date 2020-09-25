@@ -106,6 +106,7 @@ void client_tab::connect_clicked()
     ui->pushButton_Connect->setText(connected ? "Disconnect" : "Connect");
 
     ui->groupBox_Communication->setEnabled(connected);
+    emit connection_status_changed(connected);
 }
 
 void client_tab::data_type_changed()

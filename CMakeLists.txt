@@ -40,5 +40,5 @@ include_directories(
     src
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} resources.qrc)
 target_link_libraries(${PROJECT_NAME} ${LIBS})

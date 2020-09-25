@@ -53,6 +53,9 @@ private:
     IPv4_validator* ip4_validator{nullptr};
     Ui::ClientForm* ui{nullptr};
     std::unique_ptr<client_session> client_;
+
+signals:
+    void connection_status_changed(bool active);
 };
 
 class client_log_widget_item : public QListWidgetItem

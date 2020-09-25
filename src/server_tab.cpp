@@ -55,6 +55,7 @@ void server_tab::connect_clicked()
     connected = server.get() != nullptr;
 
     ui->pushButton_Connect->setText(connected ? "Disconnect" : "Connect");
+    emit connection_status_changed(connected);
 }
 
 void server_tab::append_log_msg(const QString& msg)

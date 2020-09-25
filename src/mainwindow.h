@@ -9,11 +9,10 @@ class QTableWidgetItem;
 
 namespace Ui {
 class MainWindow;
-class ClientForm;
 }
 
-class IPv4_validator;
-class client_session;
+class client_tab;
+class server_tab;
 
 class mainwindow : public QMainWindow
 {
@@ -23,7 +22,11 @@ public:
     ~mainwindow() override;
 
 private:
+    void update_tab_status(int index, bool active);
+
     Ui::MainWindow* ui {nullptr};
+    client_tab* client;
+    server_tab* server;
 };
 
 

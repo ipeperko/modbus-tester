@@ -27,6 +27,9 @@ private:
 
     Ui::ServerForm* ui {nullptr};
     std::unique_ptr<server_session> server;
+
+signals:
+    void connection_status_changed(bool active);
 };
 
 
