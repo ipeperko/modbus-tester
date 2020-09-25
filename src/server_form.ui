@@ -21,6 +21,31 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
+       <widget class="pushbutton_play_stop" name="pushButton_Connect">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Connect</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QRadioButton" name="radioButton_TCP">
@@ -205,31 +230,6 @@
         </layout>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_Connect">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Connect</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
@@ -263,6 +263,11 @@
    <class>log_widget</class>
    <extends>QListWidget</extends>
    <header>log_widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>pushbutton_play_stop</class>
+   <extends>QPushButton</extends>
+   <header>mb_tester_common.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

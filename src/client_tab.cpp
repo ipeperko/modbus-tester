@@ -50,6 +50,7 @@ client_tab::client_tab(QWidget *parent)
     connection_type_changed();
     data_type_changed();
     clear_table_values();
+    ui->pushButton_Connect->update_status(false);
 }
 
 client_tab::~client_tab()
@@ -103,7 +104,7 @@ void client_tab::connect_clicked()
     ui->frame_TCP->setEnabled(!connected);
     ui->frame_RTU->setEnabled(!connected);
     ui->frame_ConnectionCommon->setEnabled(!connected);
-    ui->pushButton_Connect->setText(connected ? "Disconnect" : "Connect");
+    ui->pushButton_Connect->update_status(connected);
 
     ui->groupBox_Communication->setEnabled(connected);
     emit connection_status_changed(connected);

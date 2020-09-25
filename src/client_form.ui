@@ -23,7 +23,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <widget class="QPushButton" name="pushButton_Connect">
+         <widget class="pushbutton_play_stop" name="pushButton_Connect">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -638,6 +638,11 @@
    <class>log_widget</class>
    <extends>QListWidget</extends>
    <header>log_widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>pushbutton_play_stop</class>
+   <extends>QPushButton</extends>
+   <header>mb_tester_common.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

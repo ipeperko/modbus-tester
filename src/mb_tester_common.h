@@ -1,6 +1,8 @@
 #ifndef MODBUS_TESTER_MB_TESTER_COMMON_H
 #define MODBUS_TESTER_MB_TESTER_COMMON_H
 
+#include <QPushButton>
+#include <stdexcept>
 #include <vector>
 #include <string>
 
@@ -34,6 +36,24 @@ private:
 
     std::string msg;
     int err_code;
+};
+
+//
+// Play/stop button
+//
+class pushbutton_play_stop : public QPushButton
+{
+    Q_OBJECT
+public:
+    pushbutton_play_stop(QWidget* parent = nullptr)
+        : QPushButton(parent)
+    {}
+
+    void update_status(bool active)
+    {
+        setText(active ? "Disconnect" : "Connect");
+        setIcon(active ? QIcon(":/img/ico_stop.png") : QIcon(":/img/ico_start.png"));
+    }
 };
 
 #endif //MODBUS_TESTER_MB_TESTER_COMMON_H

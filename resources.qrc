@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>img/bus.png</file>
         <file>img/minus.png</file>
+        <file>img/ico_start.png</file>
+        <file>img/ico_stop.png</file>
     </qresource>
 </RCC>

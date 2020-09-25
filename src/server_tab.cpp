@@ -13,6 +13,7 @@ server_tab::server_tab(QWidget *parent)
     connect(ui->pushButton_Connect, &QPushButton::clicked, this, &server_tab::connect_clicked);
 
     connection_type_changed();
+    ui->pushButton_Connect->update_status(false);
 }
 
 server_tab::~server_tab()
@@ -54,7 +55,7 @@ void server_tab::connect_clicked()
 
     connected = server.get() != nullptr;
 
-    ui->pushButton_Connect->setText(connected ? "Disconnect" : "Connect");
+    ui->pushButton_Connect->update_status(connected);
     emit connection_status_changed(connected);
 }
 
