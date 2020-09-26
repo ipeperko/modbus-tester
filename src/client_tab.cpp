@@ -241,29 +241,29 @@ void client_tab::data_read()
             case mb_dropdown_data_index_t::holding_registers:
             {
                 auto data = client_->read_holding_registers(addr, n);
-                auto* log_item = logger.log(type, mb_direction_t::read, addr, data);
+                logger.log(type, mb_direction_t::read, addr, data);
                 populate_table(addr, data);
             }
                 break;
             case mb_dropdown_data_index_t::input_registers:
             {
                 auto data = client_->read_input_registers(addr, n);
-                auto* log_item = logger.log(type, mb_direction_t::read, addr, data);
-                populate_table(addr, log_item->data_regs);
+                logger.log(type, mb_direction_t::read, addr, data);
+                populate_table(addr, data);
             }
                 break;
             case mb_dropdown_data_index_t::coils:
             {
                 auto data = client_->read_coils(addr, n);
-                auto* log_item = logger.log(type, mb_direction_t::read, addr, data);
-                populate_table(addr, log_item->data_bits);
+                logger.log(type, mb_direction_t::read, addr, data);
+                populate_table(addr, data);
             }
                 break;
             case mb_dropdown_data_index_t::discrete_inputs:
             {
                 auto data = client_->read_discrete_inputs(addr, n);
-                auto* log_item = logger.log(type, mb_direction_t::read, addr, data);
-                populate_table(addr, log_item->data_bits);
+                logger.log(type, mb_direction_t::read, addr, data);
+                populate_table(addr, data);
             }
                 break;
             default:
@@ -328,7 +328,7 @@ void client_tab::data_write()
                     data.push_back(val);
                 }
 
-                auto * item = logger.log(type, mb_direction_t::write, addr, data);
+                logger.log(type, mb_direction_t::write, addr, data);
                 client_->write_coils(addr, data);
             }
                 break;
