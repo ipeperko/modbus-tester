@@ -76,7 +76,7 @@ void log_widget::show_context_menu(const QPoint& pos)
 
     // Run again action
     if (auto* item = itemAt(pos)) {
-        if (auto* cit = dynamic_cast<client_log_widget_item*>(item)) {
+        if (auto* cit = dynamic_cast<log_widget_item*>(item)) {
             menu.addAction("Run again", this, [this, cit]() {
                 emit item_action(cit);
             });

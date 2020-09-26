@@ -1,6 +1,7 @@
 #ifndef MODBUS_TESTER_LOG_WIDGET_H
 #define MODBUS_TESTER_LOG_WIDGET_H
 
+#include "log_widget_item.h"
 #include <QListWidget>
 
 class log_widget : public QListWidget
@@ -21,7 +22,7 @@ private slots:
     void show_context_menu(const QPoint& pos);
 
 signals:
-    void item_action(QListWidgetItem* item);
+    void item_action(log_widget_item const* item);
 };
 
 

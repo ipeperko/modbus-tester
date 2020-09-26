@@ -14,10 +14,14 @@ class ClientForm;
 
 class IPv4_validator;
 class client_session;
+class log_widget_item;
 
 class client_tab : public QWidget
 {
     Q_OBJECT
+
+    class logger_helper;
+    friend class logger_helper;
 public:
     static const char* data_index_str(mb_dropdown_data_index_t type);
 
@@ -37,7 +41,7 @@ private slots:
     void data_read();
     void data_write();
     void check_socket();
-    void append_log(bool write, mb_dropdown_data_index_t cmd, int addr, int size);
+    void log_widget_action(log_widget_item const* item);
     void append_log_msg(const QString& msg);
     void append_log_error(const QString& msg);
 

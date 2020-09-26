@@ -642,7 +642,7 @@
   <customwidget>
    <class>pushbutton_play_stop</class>
    <extends>QPushButton</extends>
-   <header>mb_tester_common.h</header>
+   <header>pushbutton_play_stop.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

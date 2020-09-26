@@ -5,6 +5,31 @@
 #include <QDateTime>
 #include <QDebug>
 
+class client_tab::logger_helper
+{
+    client_tab& self;
+public:
+    logger_helper(client_tab& self)
+        : self(self)
+    {}
+
+    template<class DataVectorType>
+    log_widget_item* log(mb_dropdown_data_index_t cmd, mb_direction_t direction, int addr, DataVectorType const& data)
+    {
+        //static_assert(std::is_same_v<DataVectorType, mb_reg_vector> || std::is_same_v<DataVectorType, mb_bit_vector>, "Invalid modbus data vector type");
+
+        QString s = direction == mb_direction_t::write ? "WRITE " : "READ  ";
+        s += "[";
+        s += self.data_index_str(cmd);
+        s += "]  address " + QString::number(addr) + "  size " + QString::number(data.size() /* * sizeof(mb_bit_vector::value_type) */);
+
+        auto* log_item = new log_widget_item(nullptr, cmd, direction, addr, data);
+        self.ui->listWidget->append_item(log_item, s);
+        return log_item;
+    }
+};
+
+
 const char* client_tab::data_index_str(mb_dropdown_data_index_t type)
 {
     switch (type) {
@@ -45,6 +70,7 @@ client_tab::client_tab(QWidget *parent)
     connect(ui->pushButton_ReadData, &QPushButton::clicked, this, &client_tab::data_read);
     connect(ui->pushButton_WriteData, &QPushButton::clicked, this, &client_tab::data_write);
     connect(ui->tableWidget, &QTableWidget::itemChanged, this, &client_tab::validate_table_cell);
+    connect(ui->listWidget, &log_widget::item_action, this, &client_tab::log_widget_action);
 
     data_address_changed();
     connection_type_changed();
@@ -209,34 +235,39 @@ void client_tab::data_read()
             return;
         }
 
-        append_log(false, type, addr, n);
+        logger_helper logger(*this);
 
         switch (type) {
             case mb_dropdown_data_index_t::holding_registers:
             {
-                auto res = client_->read_holding_registers(addr, n);
-                populate_table(addr, res);
+                auto data = client_->read_holding_registers(addr, n);
+                auto* log_item = logger.log(type, mb_direction_t::read, addr, data);
+                populate_table(addr, data);
             }
                 break;
             case mb_dropdown_data_index_t::input_registers:
             {
-                auto res = client_->read_input_registers(addr, n);
-                populate_table(addr, res);
+                auto data = client_->read_input_registers(addr, n);
+                auto* log_item = logger.log(type, mb_direction_t::read, addr, data);
+                populate_table(addr, log_item->data_regs);
             }
                 break;
             case mb_dropdown_data_index_t::coils:
             {
-                auto res = client_->read_coils(addr, n);
-                populate_table(addr, res);
+                auto data = client_->read_coils(addr, n);
+                auto* log_item = logger.log(type, mb_direction_t::read, addr, data);
+                populate_table(addr, log_item->data_bits);
             }
                 break;
             case mb_dropdown_data_index_t::discrete_inputs:
             {
-                auto res = client_->read_discrete_inputs(addr, n);
-                populate_table(addr, res);
+                auto data = client_->read_discrete_inputs(addr, n);
+                auto* log_item = logger.log(type, mb_direction_t::read, addr, data);
+                populate_table(addr, log_item->data_bits);
             }
                 break;
-            default:;
+            default:
+                throw std::domain_error("Unknown modbus type");
         }
     }
     catch (std::exception& e) {
@@ -262,7 +293,7 @@ void client_tab::data_write()
             return;
         }
 
-        append_log(true, type, addr, n);
+        logger_helper logger(*this);
 
         switch (type) {
             case mb_dropdown_data_index_t::holding_registers:
@@ -279,6 +310,7 @@ void client_tab::data_write()
                     data.push_back(static_cast<uint16_t>(val));
                 }
 
+                logger.log(type, mb_direction_t::write, addr, data);
                 client_->write_holding_registers(addr, data);
             }
                 break;
@@ -296,6 +328,7 @@ void client_tab::data_write()
                     data.push_back(val);
                 }
 
+                auto * item = logger.log(type, mb_direction_t::write, addr, data);
                 client_->write_coils(addr, data);
             }
                 break;
@@ -320,15 +353,30 @@ void client_tab::check_socket()
     }
 }
 
-void client_tab::append_log(bool write, mb_dropdown_data_index_t cmd, int addr, int size)
+void client_tab::log_widget_action(log_widget_item const* item)
 {
-    QString s = write ? "WRITE " : "READ  ";
-    s += "[";
-    s += data_index_str(cmd);
-    s += "]  address " + QString::number(addr) + "  size " + QString::number(size);
+    ui->comboBox_DataType->setCurrentIndex(static_cast<int>(item->role));
+    ui->spinBox_DataAddress->setValue(item->addr);
+    ui->spinBox_DataSize->setValue(item->size);
 
-    auto* item = new client_log_widget_item(nullptr, cmd, addr, size);
-    ui->listWidget->append_item(item, s);
+    switch (item->role) {
+        case mb_dropdown_data_index_t::holding_registers:
+        case mb_dropdown_data_index_t::input_registers:
+            populate_table(item->addr, item->data_regs);
+            break;
+        case mb_dropdown_data_index_t::coils:
+        case mb_dropdown_data_index_t::discrete_inputs:
+            populate_table(item->addr, item->data_bits);
+            break;
+        default:;
+    }
+
+    if (item->direction == mb_direction_t::write) {
+        data_write();
+    }
+    else {
+        data_read();
+    }
 }
 
 void client_tab::append_log_msg(const QString &msg)
