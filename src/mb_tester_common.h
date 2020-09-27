@@ -22,6 +22,12 @@ enum class mb_direction_t
     write
 };
 
+enum class mb_rtu_type
+{
+    RS232,
+    RS485,
+};
+
 //
 // Modbus exception
 //

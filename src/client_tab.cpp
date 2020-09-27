@@ -1,6 +1,5 @@
 #include "client_tab.h"
 #include "IPv4_validator.h"
-#include "client_session_tcp.h"
 #include "ui_client_form.h"
 #include <QDateTime>
 #include <QDebug>

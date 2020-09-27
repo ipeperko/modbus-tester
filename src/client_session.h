@@ -27,5 +27,24 @@ protected:
 
 };
 
+//
+// Client session TCP
+//
+class client_session_tcp : public client_session
+{
+public:
+    client_session_tcp(std::string_view ip, int port);
+
+};
+
+//
+// Client session RTU
+//
+class client_session_rtu : public client_session
+{
+public:
+    client_session_rtu(std::string_view tty, mb_rtu_type type, int baud);
+};
+
 
 #endif //MODBUS_TESTER_CLIENT_SESSION_H

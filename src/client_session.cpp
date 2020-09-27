@@ -1,4 +1,6 @@
 #include "client_session.h"
+#include <modbus/modbus-tcp.h>
+#include <modbus/modbus-rtu.h>
 
 client_session::~client_session()
 {
@@ -86,3 +88,23 @@ void client_session::write_coils(int addr, mb_bit_vector const& data)
         on_error("Modbus write coils failed");
     }
 }
+
+//
+// Client session TCP
+//
+client_session_tcp::client_session_tcp(std::string_view ip, int port)
+{
+    ctx = modbus_new_tcp(ip.data(), port);
+}
+
+//
+// Client session RTU
+//
+client_session_rtu::client_session_rtu(std::string_view tty, mb_rtu_type type, int baud)
+{
+    ctx = modbus_new_rtu(tty.data(), baud, 'N', 8, 1);
+    if (ctx) {
+        modbus_rtu_set_serial_mode(ctx, type == mb_rtu_type::RS232 ? MODBUS_RTU_RS232 : MODBUS_RTU_RS485);
+    }
+}
+
