@@ -355,23 +355,23 @@ void client_tab::check_socket()
 
 void client_tab::log_widget_action(log_widget_item const* item)
 {
-    ui->comboBox_DataType->setCurrentIndex(static_cast<int>(item->role));
-    ui->spinBox_DataAddress->setValue(item->addr);
-    ui->spinBox_DataSize->setValue(item->size);
+    ui->comboBox_DataType->setCurrentIndex(static_cast<int>(item->role()));
+    ui->spinBox_DataAddress->setValue(item->address());
+    ui->spinBox_DataSize->setValue(item->data_size());
 
-    switch (item->role) {
+    switch (item->role()) {
         case mb_dropdown_data_index_t::holding_registers:
         case mb_dropdown_data_index_t::input_registers:
-            populate_table(item->addr, item->data_regs);
+            populate_table(item->address(), item->get_regs());
             break;
         case mb_dropdown_data_index_t::coils:
         case mb_dropdown_data_index_t::discrete_inputs:
-            populate_table(item->addr, item->data_bits);
+            populate_table(item->address(), item->get_bits());
             break;
         default:;
     }
 
-    if (item->direction == mb_direction_t::write) {
+    if (item->direction() == mb_direction_t::write) {
         data_write();
     }
     else {
