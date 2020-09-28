@@ -23,8 +23,7 @@ const char* mb_exception::error_descr() const noexcept
 
 std::string mb_exception::build_message(const std::string &what, int err_code)
 {
-    std::string msg = what + " - reason " + std::string(error_descr(err_code)) + " (" + std::to_string(err_code) + ")";
-    return std::__cxx11::string();
+    return what + " - reason " + std::string(error_descr(err_code)) + " (" + std::to_string(err_code) + ")";
 }
 
 const char* mb_exception::error_descr(int code) noexcept
