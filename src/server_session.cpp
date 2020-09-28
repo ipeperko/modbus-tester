@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <sstream>
 #include <QDebug>
+#include <unistd.h>
 
 server_session::server_session(int port)
 {
@@ -46,11 +47,16 @@ void server_session::stop_server()
     // Disable task execution
     do_run = false;
 
-    // Shutdown socket
-    if (socket >= 0) {
-        shutdown(socket, SHUT_RDWR);
-        //close(socket);
-        socket = -1;
+    // Shutdown listener socket
+    if (sock_listen >= 0) {
+        shutdown(sock_listen, SHUT_RDWR);
+        sock_listen = -1;
+    }
+
+    // Shutdown accept socket
+    if (sock_accept >= 0) {
+        shutdown(sock_accept, SHUT_RDWR);
+        sock_accept = -1;
     }
 
     // Join thread
@@ -63,14 +69,14 @@ void server_session::task()
 {
     qDebug() << "Server task started";
 
-    socket = modbus_tcp_listen(ctx, max_connections);
-    if (socket < 0) {
+    sock_listen = modbus_tcp_listen(ctx, 1);
+    if (sock_listen < 0) {
         on_error("Modbus tcp server socket failed");
     }
 
     while (do_run) {
         qDebug() << "Server accepting...";
-        int rc = modbus_tcp_accept(ctx, &socket);
+        int rc = modbus_tcp_accept(ctx, &sock_listen);
         qDebug() << "Server accepted - code : " << rc;
 
         if (rc < 0) {
@@ -78,6 +84,8 @@ void server_session::task()
             std::this_thread::yield();
             continue;
         }
+
+        sock_accept = rc;
 
         int nsend;
 
@@ -89,6 +97,8 @@ void server_session::task()
             qDebug() << "Server received " << nrcv;
             if (nrcv < 10) {
                 qWarning() << "Modbus server received < 10 bytes (" << nrcv << ") - break";
+                close(sock_accept);
+                sock_accept = -1;
                 break;
             }
 
@@ -100,6 +110,9 @@ void server_session::task()
             } else {
                 qDebug() << "Replying to request bytes : " << nsend;
             }
+
+            close(sock_accept);
+            sock_accept = -1;
 
         } while(nsend > 0);
     }

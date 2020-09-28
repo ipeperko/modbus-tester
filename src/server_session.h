@@ -30,7 +30,6 @@ public:
     modbus_mapping_t* mb_map {nullptr};
     server_task_message_emitter message_emitter;
 
-    static constexpr int max_connections = 5;
     static constexpr size_t buffer_size_bits = 1024;
     static constexpr size_t buffer_size_coils = 1024;
     static constexpr size_t buffer_size_holding_register = 1024;
@@ -40,7 +39,8 @@ private:
     void task();
     int server_reply(const std::vector<uint8_t>& query);
 
-    int socket {-1};
+    int sock_listen {-1};
+    int sock_accept {-1};
     std::thread thr;
     bool do_run {false};
 };
