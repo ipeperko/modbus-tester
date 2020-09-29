@@ -23,11 +23,11 @@ void session_base::set_debug(bool enable)
 {
     int rc = modbus_set_debug(ctx, enable);
     if (rc != 0) {
-        on_error("Modbus set debug failed");
+        on_error_exception("Modbus set debug failed");
     }
 }
 
-void session_base::on_error(std::string_view what)
+void session_base::on_error_exception(std::string_view what)
 {
     int err = errno;
     throw mb_exception(what.data(), err);

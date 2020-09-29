@@ -17,7 +17,7 @@ public:
     void set_debug(bool enable);
 
 protected:
-    void on_error(std::string_view what);
+    void on_error_exception(std::string_view what);
 
     modbus_t *ctx {nullptr};
 };

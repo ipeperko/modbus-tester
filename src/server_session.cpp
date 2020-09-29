@@ -11,7 +11,7 @@ server_session::server_session(int port)
 
     ctx = modbus_new_tcp("0.0.0.0", port);
     if (!ctx) {
-        on_error("Cannot create new Modbus tcp connection");
+        on_error_exception("Cannot create new Modbus tcp connection");
     }
 }
 
@@ -85,22 +85,23 @@ void server_session::task()
 
     sock_listen = modbus_tcp_listen(ctx, 1);
     if (sock_listen < 0) {
-        on_error("Modbus tcp server socket failed");
+        on_error_exception("Modbus tcp server socket failed");
     }
 
     while (do_run) {
         qDebug() << "Server accepting...";
-        int rc = modbus_tcp_accept(ctx, &sock_listen);
-        qDebug() << "Server accepted - code : " << rc;
+        int s = modbus_tcp_accept(ctx, &sock_listen);
+        qDebug() << "Server accepted - code : " << s;
 
-        if (rc < 0) {
-            qWarning() << "TCP accept failed";
+        if (s < 0) {
+            emit error_message("TCP accept failed");
             std::this_thread::yield();
             continue;
         }
 
+        // s is a new opened socket and should be closed after receive completed
         RAII_helper sock_auto_close([&]() {
-            sock_accept = rc;
+            sock_accept = s;
         }, [&]() {
             close(sock_accept);
             sock_accept = -1;
@@ -114,18 +115,22 @@ void server_session::task()
             qDebug() << "Server receiving...";
             int nrcv = modbus_receive(ctx, &query[0]);
             qDebug() << "Server received " << nrcv;
-            if (nrcv < 10) {
-                qWarning() << "Modbus server received < 10 bytes (" << nrcv << ") - break";
+            if (nrcv < 0) {
                 break;
             }
+            else if (nrcv < 10) {
+                emit error_message(QString("Modbus server received < 10 bytes (%1)").arg(nrcv));
+                nsend = modbus_reply_exception(ctx, &query[0], MODBUS_EXCEPTION_ILLEGAL_FUNCTION);
+            }
+            else {
+                query.resize(nrcv);
+                nsend = server_reply(query);
 
-            query.resize(nrcv);
-            nsend = server_reply(query);
-
-            if (nsend < 0) {
-                qWarning() << "Modbus sending error - %s" << modbus_strerror(errno);
-            } else {
-                qDebug() << "Replying to request bytes : " << nsend;
+                if (nsend < 0) {
+                    emit error_message(QString("Modbus sending error - %1").arg(modbus_strerror(errno)));
+                } else {
+                    qDebug() << "Replying to request bytes : " << nsend;
+                }
             }
 
         } while(nsend > 0);
