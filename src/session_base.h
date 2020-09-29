@@ -2,11 +2,14 @@
 #define MODBUS_TESTER_SESSION_BASE_H
 
 #include "mb_tester_common.h"
+#include <QObject>
 #include <modbus/modbus.h>
 
-class session_base
+class session_base : public QObject
 {
+    Q_OBJECT
 public:
+    session_base() = default;
     virtual ~session_base();
 
     void disconnect();

@@ -8,6 +8,7 @@
 //
 class client_session : public session_base
 {
+    Q_OBJECT
 public:
     virtual ~client_session();
 
@@ -22,9 +23,6 @@ public:
 
     void write_holding_registers(int addr, mb_reg_vector const& data);
     void write_coils(int addr, mb_bit_vector const& data);
-
-protected:
-
 };
 
 //

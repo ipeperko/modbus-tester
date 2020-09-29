@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 server_session::server_session(int port)
+    : session_base()
 {
     mb_map = modbus_mapping_new(buffer_size_coils, buffer_size_coils, buffer_size_holding_register, buffer_size_input_registers);
 
@@ -37,7 +38,7 @@ void server_session::start_server()
             task();
         }
         catch (std::exception& e) {
-            emit message_emitter.error_message(e.what());
+            emit error_message(e.what());
         }
     });
 }
@@ -148,7 +149,7 @@ int server_session::server_reply(const std::vector<uint8_t>& query)
             os << " " << std::hex << static_cast<int>(it) << std::dec;
         }
 
-        emit message_emitter.message(os.str().c_str());
+        emit message(os.str().c_str());
     }
 
     return modbus_reply(ctx, &query[0], query.size(), mb_map);

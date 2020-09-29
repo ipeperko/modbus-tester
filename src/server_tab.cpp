@@ -42,8 +42,8 @@ void server_tab::connect_clicked()
         try {
             append_log_msg("connecting...");
             server = std::make_unique<server_session>(ui->spinBox_TCPPort->value());
-            connect(&server->message_emitter, &server_task_message_emitter::message, this, &server_tab::append_log_msg);
-            connect(&server->message_emitter, &server_task_message_emitter::error_message, this, &server_tab::append_log_error);
+            connect(server.get(), &server_session::message, this, &server_tab::append_log_msg);
+            connect(server.get(), &server_session::error_message, this, &server_tab::append_log_error);
             server->set_debug(ui->checkBox_Debug->isChecked());
             server->start_server();
             append_log_msg("connected");

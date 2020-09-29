@@ -3,23 +3,10 @@
 
 #include "session_base.h"
 #include <thread>
-#include <QObject>
-
-class server_task_message_emitter : public QObject
-{
-    Q_OBJECT
-public:
-    server_task_message_emitter(QObject* parent = nullptr)
-        : QObject(parent)
-    {}
-
-signals:
-    void message(const QString& msg);
-    void error_message(const QString& msg);
-};
 
 class server_session : public session_base
 {
+    Q_OBJECT
 public:
     server_session(int port);
     ~server_session() override;
@@ -28,7 +15,6 @@ public:
     void stop_server();
 
     modbus_mapping_t* mb_map {nullptr};
-    server_task_message_emitter message_emitter;
 
     static constexpr size_t buffer_size_bits = 1024;
     static constexpr size_t buffer_size_coils = 1024;
@@ -43,6 +29,10 @@ private:
     int sock_accept {-1};
     std::thread thr;
     bool do_run {false};
+
+signals:
+    void message(const QString& msg);
+    void error_message(const QString& msg);
 };
 
 #endif //MODBUS_TESTER_SERVER_SESSION_H
