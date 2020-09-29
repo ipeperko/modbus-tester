@@ -2,6 +2,7 @@
 #include "IPv4_validator.h"
 #include "ui_client_form.h"
 #include <QDateTime>
+#include <QSettings>
 #include <QDebug>
 
 class client_tab::logger_helper
@@ -71,6 +72,11 @@ client_tab::client_tab(QWidget *parent)
     connect(ui->tableWidget, &QTableWidget::itemChanged, this, &client_tab::validate_table_cell);
     connect(ui->listWidget, &log_widget::item_action, this, &client_tab::log_widget_action);
 
+    QSettings sett;
+    ui->lineEdit_ipAddress->setText(sett.value("client/tcp_address", "127.0.0.1").toString());
+    ui->spinBox_TCPPort->setValue(sett.value("client/tcp_port", 502).toInt());
+    ui->spinBox_ClientSlaveAddress->setValue(sett.value("client/slave_address", 1).toInt());
+
     data_address_changed();
     connection_type_changed();
     data_type_changed();
@@ -80,13 +86,16 @@ client_tab::client_tab(QWidget *parent)
 
 client_tab::~client_tab()
 {
+    QSettings sett;
+    sett.setValue("client/tcp_address", ui->lineEdit_ipAddress->text());
+    sett.setValue("client/tcp_port", ui->spinBox_TCPPort->value());
+    sett.setValue("client/slave_address", ui->spinBox_ClientSlaveAddress->value());
     delete ui;
 }
 
 void client_tab::connection_type_changed()
 {
     bool is_tcp = ui->radioButton_TCP->isChecked();
-
     ui->frame_TCP->setVisible(is_tcp);
     ui->frame_RTU->setVisible(!is_tcp);
 }
