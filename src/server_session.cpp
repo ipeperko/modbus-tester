@@ -48,13 +48,13 @@ void server_session::stop_server()
     do_run = false;
 
     // Shutdown listener socket
-    if (sock_listen >= 0) {
+    if (sock_listen > -1) {
         shutdown(sock_listen, SHUT_RDWR);
         sock_listen = -1;
     }
 
     // Shutdown accept socket
-    if (sock_accept >= 0) {
+    if (sock_accept > -1) {
         shutdown(sock_accept, SHUT_RDWR);
         sock_accept = -1;
     }
@@ -64,6 +64,19 @@ void server_session::stop_server()
         thr.join();
     }
 }
+
+class socket_cleaner
+{
+public:
+    explicit socket_cleaner(int& s) : sock(s) {}
+    ~socket_cleaner()
+    {
+        close(sock);
+        sock = -1;
+    }
+private:
+    int& sock;
+};
 
 void server_session::task()
 {
@@ -85,7 +98,12 @@ void server_session::task()
             continue;
         }
 
-        sock_accept = rc;
+        RAII_helper sock_auto_close([&]() {
+            sock_accept = rc;
+        }, [&]() {
+            close(sock_accept);
+            sock_accept = -1;
+        });
 
         int nsend;
 
@@ -97,8 +115,6 @@ void server_session::task()
             qDebug() << "Server received " << nrcv;
             if (nrcv < 10) {
                 qWarning() << "Modbus server received < 10 bytes (" << nrcv << ") - break";
-                close(sock_accept);
-                sock_accept = -1;
                 break;
             }
 
@@ -110,9 +126,6 @@ void server_session::task()
             } else {
                 qDebug() << "Replying to request bytes : " << nsend;
             }
-
-            close(sock_accept);
-            sock_accept = -1;
 
         } while(nsend > 0);
     }

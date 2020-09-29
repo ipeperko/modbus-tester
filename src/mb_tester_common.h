@@ -57,4 +57,25 @@ private:
     int err_code;
 };
 
+//
+// RAII helper
+//
+template<typename Setter, typename Resetter>
+class RAII_helper
+{
+    Resetter resetter_;
+
+public:
+    RAII_helper(Setter&& setter, Resetter&& reseter)
+            : resetter_(std::move(reseter))
+    {
+        setter();
+    }
+
+    ~RAII_helper()
+    {
+        resetter_();
+    }
+};
+
 #endif //MODBUS_TESTER_MB_TESTER_COMMON_H
