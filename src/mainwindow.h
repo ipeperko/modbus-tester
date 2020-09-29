@@ -20,6 +20,7 @@ public:
     ~mainwindow() override;
 
 private:
+    void closeEvent(QCloseEvent*) override;
     void update_tab_status(int index, bool active);
 
     Ui::MainWindow* ui {nullptr};
