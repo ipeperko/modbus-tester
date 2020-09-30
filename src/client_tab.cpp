@@ -107,11 +107,11 @@ void client_tab::connect_clicked()
 
     if (connected) {
         client_.reset();
-        append_log_msg("disconnected");
+        append_log_msg("Disconnected");
     }
     else {
         try {
-            append_log_msg("connecting ...");
+            append_log_msg("Connecting ...");
             if (is_tcp) {
                 client_ = std::make_unique<client_session_tcp>(ui->lineEdit_ipAddress->text().toStdString(),
                                                                ui->spinBox_TCPPort->value());
@@ -123,7 +123,7 @@ void client_tab::connect_clicked()
             client_->connect();
             client_->set_slave_address(ui->spinBox_ClientSlaveAddress->value());
             client_->set_debug(ui->checkBox_Debug->isChecked());
-            append_log_msg("connected");
+            append_log_msg("Connected");
         }
         catch (std::exception& e) {
             client_.reset();

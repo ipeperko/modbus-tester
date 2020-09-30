@@ -89,15 +89,15 @@ void server_session::task()
     }
 
     while (do_run) {
-        qDebug() << "Server accepting...";
         int s = modbus_tcp_accept(ctx, &sock_listen);
-        qDebug() << "Server accepted - code : " << s;
 
         if (s < 0) {
             emit error_message("TCP accept failed");
             std::this_thread::yield();
             continue;
         }
+
+        emit message("Accepted connection");
 
         // s is a new opened socket and should be closed after receive completed
         RAII_helper sock_auto_close([&]() {
@@ -112,10 +112,10 @@ void server_session::task()
         do {
             std::vector<uint8_t> query(MODBUS_TCP_MAX_ADU_LENGTH, 0);
 
-            qDebug() << "Server receiving...";
             int nrcv = modbus_receive(ctx, &query[0]);
-            qDebug() << "Server received " << nrcv;
+
             if (nrcv < 0) {
+                qDebug() << "Receive error " << modbus_strerror(errno);
                 break;
             }
             else if (nrcv < 10) {

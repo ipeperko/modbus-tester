@@ -34,19 +34,19 @@ void server_tab::connect_clicked()
     bool connected = server.get() != nullptr;
 
     if (connected) {
-        append_log_msg("disconnecting...");
+        append_log_msg("Disconnecting...");
         server.reset();
-        append_log_msg("disconnected");
+        append_log_msg("Disconnected");
     }
     else {
         try {
-            append_log_msg("connecting...");
+            append_log_msg("Connecting...");
             server = std::make_unique<server_session>(ui->spinBox_TCPPort->value());
             connect(server.get(), &server_session::message, this, &server_tab::append_log_msg);
             connect(server.get(), &server_session::error_message, this, &server_tab::append_log_error);
             server->set_debug(ui->checkBox_Debug->isChecked());
             server->start_server();
-            append_log_msg("connected");
+            append_log_msg("Connected");
         }
         catch(std::exception& e) {
             append_log_error(e.what());

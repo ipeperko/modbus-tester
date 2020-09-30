@@ -15,8 +15,6 @@ public:
     server_tab(QWidget* parent = nullptr);
     ~server_tab() override;
 
-//    modbus_mapping_t data;
-
 private slots:
     void connection_type_changed();
     void connect_clicked();
