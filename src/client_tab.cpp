@@ -23,6 +23,14 @@ public:
         s += self.data_index_str(cmd);
         s += "]  address " + QString::number(addr) + "  size " + QString::number(data.size() /* * sizeof(mb_bit_vector::value_type) */);
 
+        if (!data.empty()) {
+            s += " :";
+            std::for_each(data.begin(), data.end(), [&](typename DataVectorType::value_type v) {
+                 s += " ";
+                 s += std::to_string(v).c_str();
+            });
+        }
+
         auto* log_item = new log_widget_item(nullptr, cmd, direction, addr, data);
         self.ui->listWidget->append_item(log_item, s);
         return log_item;
