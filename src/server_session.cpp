@@ -7,8 +7,10 @@
 server_session::server_session(int port)
     : session_base()
 {
+    // Create mapping
     mb_map = modbus_mapping_new(buffer_size_coils, buffer_size_coils, buffer_size_holding_register, buffer_size_input_registers);
 
+    // Create modbus context
     ctx = modbus_new_tcp("0.0.0.0", port);
     if (!ctx) {
         on_error_exception("Cannot create new Modbus tcp connection");
@@ -17,8 +19,10 @@ server_session::server_session(int port)
 
 server_session::~server_session()
 {
+    // Stop server first if running
     stop_server();
 
+    // Clean mapping
     if (mb_map) {
         modbus_mapping_free(mb_map);
     }
@@ -66,29 +70,23 @@ void server_session::stop_server()
     }
 }
 
-class socket_cleaner
-{
-public:
-    explicit socket_cleaner(int& s) : sock(s) {}
-    ~socket_cleaner()
-    {
-        close(sock);
-        sock = -1;
-    }
-private:
-    int& sock;
-};
-
 void server_session::task()
 {
-    qDebug() << "Server task started";
+    RAII_helper task_debug_msg([&]() {
+        qDebug() << "Server task started";
+    }, [&]() {
+        qDebug() << "Server task finished";
+    });
 
+    // Socket listen
     sock_listen = modbus_tcp_listen(ctx, 1);
+
     if (sock_listen < 0) {
         on_error_exception("Modbus tcp server socket failed");
     }
 
     while (do_run) {
+        // Accept connection
         int s = modbus_tcp_accept(ctx, &sock_listen);
 
         if (s < 0) {
@@ -99,7 +97,7 @@ void server_session::task()
 
         emit message("Accepted connection");
 
-        // s is a new opened socket and should be closed after receive completed
+        // s is a new opened socket and should be closed after receive is completed
         RAII_helper sock_auto_close([&]() {
             sock_accept = s;
         }, [&]() {
@@ -107,22 +105,28 @@ void server_session::task()
             sock_accept = -1;
         });
 
+        // Receive data
         int nsend;
 
         do {
+            // Receive buffer
             std::vector<uint8_t> query(MODBUS_TCP_MAX_ADU_LENGTH, 0);
 
+            // Receive some data
             int nrcv = modbus_receive(ctx, &query[0]);
 
             if (nrcv < 0) {
+                // Receive error
                 qDebug() << "Receive error " << modbus_strerror(errno);
                 break;
             }
             else if (nrcv < 10) {
+                // Reply exception
                 emit error_message(QString("Modbus server received < 10 bytes (%1)").arg(nrcv));
                 nsend = modbus_reply_exception(ctx, &query[0], MODBUS_EXCEPTION_ILLEGAL_FUNCTION);
             }
             else {
+                // Process request
                 query.resize(nrcv);
                 nsend = server_reply(query);
 
@@ -135,8 +139,6 @@ void server_session::task()
 
         } while(nsend > 0);
     }
-
-    qDebug() << "Server task finished";
 }
 
 int server_session::server_reply(const std::vector<uint8_t>& query)
