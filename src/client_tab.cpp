@@ -1,4 +1,5 @@
 #include "client_tab.h"
+#include "rtu_widget.h"
 #include "IPv4_validator.h"
 #include "ui_client_form.h"
 #include <QDateTime>
@@ -56,6 +57,7 @@ const char* client_tab::data_index_str(mb_dropdown_data_index_t type)
 
 client_tab::client_tab(QWidget *parent)
     : QWidget(parent)
+    , rtu_widget_(new rtu_widget)
     , ip4_validator(new IPv4_validator(this))
     , ui(new Ui::ClientForm)
 {
@@ -64,7 +66,9 @@ client_tab::client_tab(QWidget *parent)
     ui->lineEdit_ipAddress->setValidator(ip4_validator);
     ui->radioButton_TCP->setChecked(true);
     ui->groupBox_Communication->setEnabled(false);
-    
+
+    ui->frame_RTU->layout()->addWidget(rtu_widget_);
+
     connect(ui->radioButton_TCP, &QRadioButton::clicked, this, &client_tab::connection_type_changed);
     connect(ui->radioButton_RTU, &QRadioButton::clicked, this, &client_tab::connection_type_changed);
     connect(ui->pushButton_Connect, &QPushButton::clicked, this, &client_tab::connect_clicked);
@@ -125,7 +129,12 @@ void client_tab::connect_clicked()
                                                                ui->spinBox_TCPPort->value());
             }
             else {
-                throw std::runtime_error("TODO: RTU client session");
+                client_ = std::make_unique<client_session_rtu>(rtu_widget_->com_port(),
+                                                               rtu_widget_->rtu_type(),
+                                                               rtu_widget_->baud_rate(),
+                                                               rtu_widget_->parity(),
+                                                               rtu_widget_->data_bits(),
+                                                               rtu_widget_->stop_bits());
             }
 
             client_->connect();

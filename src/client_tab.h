@@ -15,6 +15,7 @@ class ClientForm;
 class IPv4_validator;
 class client_session;
 class log_widget_item;
+class rtu_widget;
 
 class client_tab : public QWidget
 {
@@ -46,6 +47,7 @@ private slots:
     void append_log_error(const QString& msg);
 
 private:
+    rtu_widget* rtu_widget_{nullptr};
     IPv4_validator* ip4_validator{nullptr};
     Ui::ClientForm* ui{nullptr};
     std::unique_ptr<client_session> client_;

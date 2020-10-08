@@ -9,7 +9,7 @@ if (WIN32)
     add_compile_options(-mno-ms-bitfields)
 endif(WIN32)
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets SerialPort REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -25,7 +25,7 @@ endif(QTDIR)
 
 message("Qt5_DIR=${Qt5_DIR}")
 
-set (LIBS PRIVATE Qt5::Widgets pthread modbus)
+set (LIBS PRIVATE Qt5::Widgets Qt5::SerialPort pthread modbus)
 
 file (GLOB SOURCES
     src/*.cpp

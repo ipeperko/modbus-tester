@@ -100,9 +100,9 @@ client_session_tcp::client_session_tcp(const QString& ip, int port)
 //
 // Client session RTU
 //
-client_session_rtu::client_session_rtu(const QString& tty, mb_rtu_type type, int baud)
+client_session_rtu::client_session_rtu(const QString& tty, mb_rtu_type type, int baud, char parity, int data_bit, int stop_bit)
 {
-    ctx = modbus_new_rtu(tty.toStdString().c_str(), baud, 'N', 8, 1);
+    ctx = modbus_new_rtu(tty.toStdString().c_str(), baud, parity, data_bit, stop_bit);
     if (ctx) {
         modbus_rtu_set_serial_mode(ctx, type == mb_rtu_type::RS232 ? MODBUS_RTU_RS232 : MODBUS_RTU_RS485);
     }

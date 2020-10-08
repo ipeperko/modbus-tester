@@ -41,7 +41,7 @@ public:
 class client_session_rtu : public client_session
 {
 public:
-    client_session_rtu(const QString& tty, mb_rtu_type type, int baud);
+    client_session_rtu(const QString& tty, mb_rtu_type type, int baud, char parity, int data_bit, int stop_bit);
 };
 
 

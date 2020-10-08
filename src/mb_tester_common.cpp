@@ -30,3 +30,4 @@ const char* mb_exception::error_descr(int code) noexcept
 {
     return modbus_strerror(code);
 }
+
