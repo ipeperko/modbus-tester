@@ -64,7 +64,7 @@ client_tab::client_tab(QWidget *parent)
     ui->lineEdit_ipAddress->setValidator(ip4_validator);
     ui->radioButton_TCP->setChecked(true);
     ui->groupBox_Communication->setEnabled(false);
-
+    
     connect(ui->radioButton_TCP, &QRadioButton::clicked, this, &client_tab::connection_type_changed);
     connect(ui->radioButton_RTU, &QRadioButton::clicked, this, &client_tab::connection_type_changed);
     connect(ui->pushButton_Connect, &QPushButton::clicked, this, &client_tab::connect_clicked);
