@@ -27,7 +27,7 @@ public:
             s += " :";
             std::for_each(data.begin(), data.end(), [&](typename DataVectorType::value_type v) {
                  s += " ";
-                 s += std::to_string(v).c_str();
+                 s += QString::number(v);
             });
         }
 
@@ -121,7 +121,7 @@ void client_tab::connect_clicked()
         try {
             append_log_msg("Connecting ...");
             if (is_tcp) {
-                client_ = std::make_unique<client_session_tcp>(ui->lineEdit_ipAddress->text().toStdString(),
+                client_ = std::make_unique<client_session_tcp>(ui->lineEdit_ipAddress->text(),
                                                                ui->spinBox_TCPPort->value());
             }
             else {

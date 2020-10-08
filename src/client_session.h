@@ -31,7 +31,7 @@ public:
 class client_session_tcp : public client_session
 {
 public:
-    client_session_tcp(std::string_view ip, int port);
+    client_session_tcp(const QString& ip, int port);
 
 };
 
@@ -41,7 +41,7 @@ public:
 class client_session_rtu : public client_session
 {
 public:
-    client_session_rtu(std::string_view tty, mb_rtu_type type, int baud);
+    client_session_rtu(const QString& tty, mb_rtu_type type, int baud);
 };
 
 
