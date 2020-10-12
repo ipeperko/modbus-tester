@@ -12,6 +12,7 @@ mainwindow::mainwindow(QWidget *parent)
     ui->setupUi(this);
 
     setWindowTitle("Modbus tester");
+    setWindowIcon(QIcon(":/img/bus.png"));
 
     client = new client_tab;
     server = new server_tab;
