@@ -22,6 +22,7 @@ public:
     void set_parity(char val);
     void set_data_bits(int val);
     void set_stop_bits(int val);
+    void set_rts(int val);
 
     mb_rtu_type rtu_type() const;
     QString com_port() const;
@@ -29,6 +30,7 @@ public:
     char parity() const;
     int data_bits() const;
     int stop_bits() const;
+    int rts() const;
 
     void load_settings(const QString& topic);
     void save_settings(const QString& topic);
@@ -38,6 +40,7 @@ private:
     QFileSystemWatcher file_watcher;
 
 private slots:
+    void mode_changed();
     void port_directory_changed(const QString &path);
 };
 

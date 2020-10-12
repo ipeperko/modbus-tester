@@ -143,7 +143,8 @@ void client_tab::connect_clicked()
                                                                rtu_widget_->baud_rate(),
                                                                rtu_widget_->parity(),
                                                                rtu_widget_->data_bits(),
-                                                               rtu_widget_->stop_bits());
+                                                               rtu_widget_->stop_bits(),
+                                                               rtu_widget_->rts());
             }
 
             client_->connect();
