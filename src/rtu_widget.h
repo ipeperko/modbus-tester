@@ -18,6 +18,10 @@ public:
     ~rtu_widget();
 
     void set_rtu_type(mb_rtu_type type);
+    void set_baud_rate(int val);
+    void set_parity(char val);
+    void set_data_bits(int val);
+    void set_stop_bits(int val);
 
     mb_rtu_type rtu_type() const;
     QString com_port() const;

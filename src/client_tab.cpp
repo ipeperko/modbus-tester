@@ -85,9 +85,16 @@ client_tab::client_tab(QWidget *parent)
     connect(ui->listWidget, &log_widget::item_action, this, &client_tab::log_widget_action);
 
     QSettings sett;
+    if (bool is_tcp = sett.value("client/connection_type_tcp", true).toBool()) {
+        ui->radioButton_TCP->setChecked(true);
+    }
+    else {
+        ui->radioButton_RTU->setChecked(true);
+    }
     ui->lineEdit_ipAddress->setText(sett.value("client/tcp_address", "127.0.0.1").toString());
     ui->spinBox_TCPPort->setValue(sett.value("client/tcp_port", 502).toInt());
     ui->spinBox_ClientSlaveAddress->setValue(sett.value("client/slave_address", 1).toInt());
+    rtu_widget_->load_settings("client");
 
     data_address_changed();
     connection_type_changed();
@@ -99,9 +106,11 @@ client_tab::client_tab(QWidget *parent)
 client_tab::~client_tab()
 {
     QSettings sett;
+    sett.setValue("client/connection_type_tcp", ui->radioButton_TCP->isChecked());
     sett.setValue("client/tcp_address", ui->lineEdit_ipAddress->text());
     sett.setValue("client/tcp_port", ui->spinBox_TCPPort->value());
     sett.setValue("client/slave_address", ui->spinBox_ClientSlaveAddress->value());
+    rtu_widget_->save_settings("client");
     delete ui;
 }
 
