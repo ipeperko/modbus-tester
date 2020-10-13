@@ -147,9 +147,9 @@ void client_tab::connect_clicked()
                                                                rtu_widget_->rts());
             }
 
-            client_->connect();
             client_->set_slave_address(ui->spinBox_ClientSlaveAddress->value());
             client_->set_debug(ui->checkBox_Debug->isChecked());
+            client_->connect();
             append_log_msg("Connected");
         }
         catch (std::exception& e) {
