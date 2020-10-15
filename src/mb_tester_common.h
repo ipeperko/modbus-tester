@@ -10,7 +10,7 @@ using mb_input_t = uint8_t;
 using mb_reg_vector = std::vector<mb_register_t>;
 using mb_bit_vector = std::vector<mb_input_t>;
 
-static constexpr int modbus_num_data_types = 4;
+inline constexpr int modbus_num_data_types = 4;
 
 enum class mb_dropdown_data_index_t : int
 {
@@ -87,22 +87,22 @@ public:
 //
 namespace modbus_option {
 
-static constexpr std::initializer_list<int> baud_rates =
+inline constexpr std::initializer_list<int> baud_rates =
 {
     9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600
 };
 
-static constexpr std::initializer_list<std::pair<char, const char*>> parity =
+inline constexpr std::initializer_list<std::pair<char, const char*>> parity =
 {
     { 'N', "None" }, { 'E', "Even" }, { 'O', "Odd" }
 };
 
-static constexpr std::initializer_list<int> data_bits =
+inline constexpr std::initializer_list<int> data_bits =
 {
     5, 6, 7, 8
 };
 
-static constexpr std::initializer_list<int> stop_bits =
+inline constexpr std::initializer_list<int> stop_bits =
 {
     1, 2
 };
