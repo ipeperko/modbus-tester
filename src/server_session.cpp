@@ -81,7 +81,11 @@ void server_session::task()
         int s = modbus_tcp_accept(ctx, &sock_listen);
 
         if (s < 0) {
-            emit error_message("TCP accept failed");
+            if (do_run) {
+                // emit error message only if do_run is true
+                // otherwise it is not considered as an error
+                emit error_message("TCP accept failed");
+            }
             std::this_thread::yield();
             continue;
         }
