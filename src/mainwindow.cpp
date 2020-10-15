@@ -20,6 +20,10 @@ mainwindow::mainwindow(QWidget *parent)
     ui->tabWidget->addTab(client, "Client");
     ui->tabWidget->addTab(server, "Server");
 
+    connect(ui->actionClose, &QAction::triggered, this, [this]() {
+        close();
+        QApplication::quit();
+    });
     connect(client, &client_tab::connection_status_changed, this, [this](bool active) {
         update_tab_status(0, active);
     });

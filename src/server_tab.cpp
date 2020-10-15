@@ -1,6 +1,7 @@
 #include "server_tab.h"
 #include "server_reg_model.h"
 #include "ui_server_form.h"
+#include <QSettings>
 #include <QDebug>
 
 server_tab::server_tab(QWidget *parent)
@@ -17,6 +18,9 @@ server_tab::server_tab(QWidget *parent)
         ui->tableView_Registers->setColumnWidth(i, 80);
     }
 
+    QSettings sett;
+    ui->spinBox_TCPPort->setValue(sett.value("server/tcp_port", 502).toInt());
+
     connect(ui->radioButton_TCP, &QRadioButton::clicked, this, &server_tab::connection_type_changed);
     connect(ui->radioButton_RTU, &QRadioButton::clicked, this, &server_tab::connection_type_changed);
     connect(ui->pushButton_Connect, &QPushButton::clicked, this, &server_tab::connect_clicked);
@@ -27,6 +31,8 @@ server_tab::server_tab(QWidget *parent)
 
 server_tab::~server_tab()
 {
+    QSettings sett;
+    sett.setValue("server/tcp_port", ui->spinBox_TCPPort->value());
     delete ui;
 }
 
