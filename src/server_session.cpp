@@ -4,28 +4,19 @@
 #include <QDebug>
 #include <unistd.h>
 
-server_session::server_session(int port)
+//
+// Server session base class
+//
+server_session::server_session(modbus_mapping_t& map)
     : session_base()
+    , mb_map(map)
 {
-    // Create mapping
-    mb_map = modbus_mapping_new(buffer_size_coils, buffer_size_coils, buffer_size_holding_register, buffer_size_input_registers);
-
-    // Create modbus context
-    ctx = modbus_new_tcp("0.0.0.0", port);
-    if (!ctx) {
-        on_error_exception("Cannot create new Modbus tcp connection");
-    }
 }
 
 server_session::~server_session()
 {
-    // Stop server first if running
+    // Stop server if running
     stop_server();
-
-    // Clean mapping
-    if (mb_map) {
-        modbus_mapping_free(mb_map);
-    }
 }
 
 void server_session::start_server()
@@ -129,12 +120,6 @@ void server_session::task()
                 // Process request
                 query.resize(nrcv);
                 nsend = server_reply(query);
-
-                if (nsend < 0) {
-                    emit error_message(QString("Modbus sending error - %1").arg(modbus_strerror(errno)));
-                } else {
-                    qDebug() << "Replying to request bytes : " << nsend;
-                }
             }
 
         } while(nsend > 0);
@@ -145,6 +130,10 @@ int server_session::server_reply(const std::vector<uint8_t>& query)
 {
     unsigned unitid = query[6];
     unsigned cmd = query[7];
+    bool is_write = cmd == MODBUS_FC_WRITE_MULTIPLE_COILS ||
+        cmd == MODBUS_FC_WRITE_MULTIPLE_REGISTERS ||
+        cmd == MODBUS_FC_WRITE_SINGLE_COIL ||
+        cmd == MODBUS_FC_WRITE_SINGLE_REGISTER;
 
     {
         std::ostringstream os;
@@ -159,5 +148,30 @@ int server_session::server_reply(const std::vector<uint8_t>& query)
         emit message(os.str().c_str());
     }
 
-    return modbus_reply(ctx, &query[0], query.size(), mb_map);
+    int rc = modbus_reply(ctx, &query[0], query.size(), &mb_map);
+
+    if (rc < 0) {
+        emit error_message(QString("Modbus sending error - %1").arg(modbus_strerror(errno)));
+    } else {
+        qDebug() << "Replying to request bytes : " << rc;
+        if (is_write) {
+            emit data_changed();
+        }
+    }
+
+    return rc;
+}
+
+//
+// Server session TCP
+//
+server_session_tcp::server_session_tcp(int port, modbus_mapping_t& map)
+    : server_session(map)
+{
+    // Create modbus context
+    ctx = modbus_new_tcp("0.0.0.0", port);
+
+    if (!ctx) {
+        on_error_exception("Cannot create new Modbus tcp connection");
+    }
 }

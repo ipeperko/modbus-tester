@@ -5,8 +5,10 @@
 #include <vector>
 #include <string>
 
-using mb_reg_vector = std::vector<uint16_t>;
-using mb_bit_vector = std::vector<uint8_t>;
+using mb_register_t = uint16_t;
+using mb_input_t = uint8_t;
+using mb_reg_vector = std::vector<mb_register_t>;
+using mb_bit_vector = std::vector<mb_input_t>;
 
 enum class mb_dropdown_data_index_t : int
 {

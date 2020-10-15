@@ -8,11 +8,13 @@ namespace Ui {
 class ServerForm;
 }
 
+class server_reg_model;
+
 class server_tab : public QWidget
 {
     Q_OBJECT
 public:
-    server_tab(QWidget* parent = nullptr);
+    explicit server_tab(QWidget* parent = nullptr);
     ~server_tab() override;
 
 private slots:
@@ -25,6 +27,7 @@ private:
 
     Ui::ServerForm* ui {nullptr};
     std::unique_ptr<server_session> server;
+    server_reg_model* reg_model;
 
 signals:
     void connection_status_changed(bool active);
