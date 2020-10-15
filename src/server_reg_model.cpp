@@ -1,6 +1,5 @@
 #include "server_reg_model.h"
 #include <QSettings>
-#include <QDebug>
 
 server_reg_model::server_reg_model(QObject* parent)
     : QAbstractTableModel(parent)
@@ -42,7 +41,7 @@ server_reg_model::~server_reg_model()
 
 int server_reg_model::rowCount(const QModelIndex&) const
 {
-    return 4;
+    return modbus_num_data_types;
 }
 
 int server_reg_model::columnCount(const QModelIndex&) const
@@ -63,7 +62,7 @@ QVariant server_reg_model::data(const QModelIndex& index, int role) const
     if (!index.isValid())
         return {};
 
-    if (index.row() >= 4 || index.row() < 0)
+    if (index.row() >= modbus_num_data_types || index.row() < 0)
         return {};
 
     if (index.column() >= buffer_size || index.column() < 0)
@@ -95,11 +94,9 @@ QVariant server_reg_model::data(const QModelIndex& index, int role) const
 
 bool server_reg_model::setData(const QModelIndex& index, const QVariant& val, int role)
 {
-    qDebug() << "server_reg_model : setData";
-
     if (index.isValid() && role == Qt::EditRole) {
 
-        if (index.row() >= 4 || index.row() < 0)
+        if (index.row() >= modbus_num_data_types || index.row() < 0)
             return false;
 
         if (index.column() >= buffer_size || index.column() < 0)

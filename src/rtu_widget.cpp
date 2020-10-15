@@ -22,7 +22,7 @@ rtu_widget::rtu_widget(QWidget* parent)
     ui->comboBox_BaudRate->addItem(QString::number(QSerialPort::Baud57600), QSerialPort::Baud57600);
     ui->comboBox_BaudRate->addItem(QString::number(QSerialPort::Baud115200), QSerialPort::Baud115200);
 
-    for (auto[f, s] : std::initializer_list<std::pair<char, const char*>>{ { 'N', "None" }, { 'E', "Even" }, { 'O', "Odd" } }) {
+    for (auto[f, s] : modbus_option::parity) {
         ui->comboBox_Parity->addItem(s, QChar(f));
     }
 

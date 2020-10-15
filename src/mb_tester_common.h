@@ -10,6 +10,8 @@ using mb_input_t = uint8_t;
 using mb_reg_vector = std::vector<mb_register_t>;
 using mb_bit_vector = std::vector<mb_input_t>;
 
+static constexpr int modbus_num_data_types = 4;
+
 enum class mb_dropdown_data_index_t : int
 {
     holding_registers = 0,
