@@ -156,7 +156,8 @@ int server_session::server_reply(const std::vector<uint8_t>& query)
 
     if (rc < 0) {
         emit error_message(QString("Modbus sending error - %1").arg(modbus_strerror(errno)));
-    } else {
+    }
+    else {
         qDebug() << "Replying to request bytes : " << rc;
         if (is_write) {
             emit data_changed();

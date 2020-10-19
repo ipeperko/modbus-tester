@@ -10,7 +10,7 @@ class client_tab::logger_helper
 {
     client_tab& self;
 public:
-    logger_helper(client_tab& self)
+    explicit logger_helper(client_tab& self)
         : self(self)
     {}
 
@@ -72,7 +72,6 @@ client_tab::client_tab(QWidget *parent)
     connect(ui->radioButton_TCP, &QRadioButton::clicked, this, &client_tab::connection_type_changed);
     connect(ui->radioButton_RTU, &QRadioButton::clicked, this, &client_tab::connection_type_changed);
     connect(ui->pushButton_Connect, &QPushButton::clicked, this, &client_tab::connect_clicked);
-    //connect(ui_client->pushButton_CheckSocket, &QPushButton::clicked, this, &client_tab::check_socket);
     connect(ui->comboBox_DataType, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             &client_tab::data_type_changed);
     connect(ui->spinBox_DataAddress, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
