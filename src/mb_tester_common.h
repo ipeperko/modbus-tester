@@ -70,15 +70,18 @@ class RAII_helper
     Resetter resetter_;
 
 public:
-    RAII_helper(Setter&& setter, Resetter&& reseter)
-            : resetter_(std::move(reseter))
+    RAII_helper(Setter&& setter, Resetter&& resetter)
+            : resetter_(std::move(resetter))
     {
         setter();
     }
 
     ~RAII_helper()
     {
-        resetter_();
+        try {
+            resetter_();
+        }
+        catch(...) {}
     }
 };
 
