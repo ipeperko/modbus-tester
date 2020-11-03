@@ -33,14 +33,14 @@ log_widget::log_widget(QWidget *parent)
 void log_widget::append_item(QListWidgetItem* item, const QString &msg)
 {
     item->setText(timeString(std::chrono::system_clock::now()) + " " + msg);
-    addItem(item);
+    add(item);
     scroll_to_bottom();
 }
 
 void log_widget::append_log_message(const QString &msg)
 {
     auto* item = new QListWidgetItem(timeString(std::chrono::system_clock::now()) + " " + msg);
-    addItem(item);
+    add(item);
     scroll_to_bottom();
 }
 
@@ -48,7 +48,7 @@ void log_widget::append_log_error(const QString &msg)
 {
     auto* item = new QListWidgetItem(timeString(std::chrono::system_clock::now()) + " " + msg);
     item->setBackground(QColor(255, 0, 0, 120));
-    addItem(item);
+    add(item);
     scroll_to_bottom();
 }
 
@@ -59,6 +59,16 @@ void log_widget::scroll_to_bottom()
         auto it = item(c - 1);
         scrollToItem(it);
     }
+}
+
+void log_widget::add(QListWidgetItem *item)
+{
+    while (count() > max_logs) {
+        auto* first = takeItem(0);
+        delete first;
+    }
+
+    addItem(item);
 }
 
 void log_widget::erase_logs()

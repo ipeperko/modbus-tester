@@ -15,6 +15,11 @@ public:
     void append_log_error(const QString& msg);
     void scroll_to_bottom();
 
+    static constexpr int max_logs = 200;
+
+private:
+    void add(QListWidgetItem *item);
+
 public slots:
     void erase_logs();
 
