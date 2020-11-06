@@ -26,7 +26,7 @@ private:
     int sock_listen {-1};
     int sock_accept {-1};
     std::thread thr;
-    bool do_run {false};
+    std::atomic<bool> do_run {false};
 
 signals:
     void data_changed();
