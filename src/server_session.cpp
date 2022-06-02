@@ -193,7 +193,7 @@ void server_session_tcp::task()
 //
 // Server session RTU
 //
-server_session_rtu::server_session_rtu(const QString &tty, mb_rtu_type type, int baud, char parity, int data_bit, int stop_bit, int rts, modbus_mapping_t &map)
+server_session_rtu::server_session_rtu(const QString &tty, mb_rtu_type type, int baud, char parity, int data_bit, int stop_bit, int rts, int slave_address, double timeout, modbus_mapping_t &map)
     : server_session(map)
 {
     ctx = modbus_new_rtu(tty.toStdString().c_str(), baud, parity, data_bit, stop_bit);
@@ -204,8 +204,8 @@ server_session_rtu::server_session_rtu(const QString &tty, mb_rtu_type type, int
 
     modbus_rtu_set_serial_mode(ctx, type == mb_rtu_type::RS232 ? MODBUS_RTU_RS232 : MODBUS_RTU_RS485);
     modbus_rtu_set_rts(ctx, rts);
-    modbus_set_slave(ctx, 1); // TODO: setting
-    modbus_set_response_timeout(ctx, 1, 0); // TODO: setting
+    modbus_set_slave(ctx, slave_address);
+    modbus_set_response_timeout(ctx, static_cast<int>(timeout), (timeout - static_cast<int>(timeout)) * 1000000);
 }
 
 void server_session_rtu::stop_server()

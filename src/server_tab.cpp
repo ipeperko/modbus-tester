@@ -74,13 +74,15 @@ void server_tab::connect_clicked()
             }
             else {
                 server = std::make_unique<server_session_rtu>(rtu_widget_->com_port(),
-                                                               rtu_widget_->rtu_type(),
-                                                               rtu_widget_->baud_rate(),
-                                                               rtu_widget_->parity(),
-                                                               rtu_widget_->data_bits(),
-                                                               rtu_widget_->stop_bits(),
-                                                               rtu_widget_->rts(),
-                                                               reg_model->mapping());
+                                                              rtu_widget_->rtu_type(),
+                                                              rtu_widget_->baud_rate(),
+                                                              rtu_widget_->parity(),
+                                                              rtu_widget_->data_bits(),
+                                                              rtu_widget_->stop_bits(),
+                                                              rtu_widget_->rts(),
+                                                              ui->spinBox_ClientSlaveAddress->value(),
+                                                              ui->doubleSpinBox_Timeout->value(),
+                                                              reg_model->mapping());
             }
 
             connect(server.get(), &server_session::message, this, &server_tab::append_log_msg);
@@ -96,6 +98,12 @@ void server_tab::connect_clicked()
     }
 
     connected = server.get() != nullptr;
+
+    ui->radioButton_TCP->setEnabled(!connected);
+    ui->radioButton_RTU->setEnabled(!connected);
+    ui->frame_TCP->setEnabled(!connected);
+    ui->frame_RTU->setEnabled(!connected);
+    ui->frame_ConnectionCommon->setEnabled(!connected);
 
     ui->pushButton_Connect->update_status(connected);
     emit connection_status_changed(connected);

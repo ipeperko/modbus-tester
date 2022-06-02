@@ -55,7 +55,7 @@ private:
 class server_session_rtu : public server_session
 {
 public:
-    server_session_rtu(const QString& tty, mb_rtu_type type, int baud, char parity, int data_bit, int stop_bit, int rts, modbus_mapping_t& map);
+    server_session_rtu(const QString& tty, mb_rtu_type type, int baud, char parity, int data_bit, int stop_bit, int rts, int slave_address, double timeout, modbus_mapping_t& map);
 
     void stop_server() override;
 
