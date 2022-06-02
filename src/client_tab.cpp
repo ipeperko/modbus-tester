@@ -110,7 +110,6 @@ client_tab::~client_tab()
     sett.setValue("client/tcp_port", ui->spinBox_TCPPort->value());
     sett.setValue("client/slave_address", ui->spinBox_ClientSlaveAddress->value());
     rtu_widget_->save_settings("client");
-    delete ui;
 }
 
 void client_tab::connection_type_changed()

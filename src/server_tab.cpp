@@ -1,4 +1,5 @@
 #include "server_tab.h"
+#include "rtu_widget.h"
 #include "server_reg_model.h"
 #include "ui_server_form.h"
 #include <QSettings>
@@ -6,10 +7,13 @@
 
 server_tab::server_tab(QWidget *parent)
     : QWidget(parent)
+    , rtu_widget_(new rtu_widget)
     , ui(new Ui::ServerForm)
 {
     ui->setupUi(this);
     ui->radioButton_TCP->setChecked(true);
+
+    ui->frame_RTU->layout()->addWidget(rtu_widget_);
 
     reg_model = new server_reg_model(this);
     ui->tableView_Registers->setModel(reg_model);
@@ -19,6 +23,13 @@ server_tab::server_tab(QWidget *parent)
     }
 
     QSettings sett;
+    if (bool is_tcp = sett.value("server/connection_type_tcp", true).toBool()) {
+        ui->radioButton_TCP->setChecked(true);
+    }
+    else {
+        ui->radioButton_RTU->setChecked(true);
+    }
+
     ui->spinBox_TCPPort->setValue(sett.value("server/tcp_port", 502).toInt());
 
     connect(ui->radioButton_TCP, &QRadioButton::clicked, this, &server_tab::connection_type_changed);
@@ -32,8 +43,8 @@ server_tab::server_tab(QWidget *parent)
 server_tab::~server_tab()
 {
     QSettings sett;
+    sett.setValue("server/connection_type_tcp", ui->radioButton_TCP->isChecked());
     sett.setValue("server/tcp_port", ui->spinBox_TCPPort->value());
-    delete ui;
 }
 
 void server_tab::connection_type_changed()
@@ -46,6 +57,7 @@ void server_tab::connection_type_changed()
 
 void server_tab::connect_clicked()
 {
+    bool is_tcp = ui->radioButton_TCP->isChecked();
     bool connected = server.get() != nullptr;
 
     if (connected) {
@@ -56,7 +68,21 @@ void server_tab::connect_clicked()
     else {
         try {
             append_log_msg("Connecting...");
-            server = std::make_unique<server_session_tcp>(ui->spinBox_TCPPort->value(), reg_model->mapping());
+            if (is_tcp) {
+                server = std::make_unique<server_session_tcp>(ui->spinBox_TCPPort->value(), reg_model->mapping());
+
+            }
+            else {
+                server = std::make_unique<server_session_rtu>(rtu_widget_->com_port(),
+                                                               rtu_widget_->rtu_type(),
+                                                               rtu_widget_->baud_rate(),
+                                                               rtu_widget_->parity(),
+                                                               rtu_widget_->data_bits(),
+                                                               rtu_widget_->stop_bits(),
+                                                               rtu_widget_->rts(),
+                                                               reg_model->mapping());
+            }
+
             connect(server.get(), &server_session::message, this, &server_tab::append_log_msg);
             connect(server.get(), &server_session::error_message, this, &server_tab::append_log_error);
             server->set_debug(ui->checkBox_Debug->isChecked());

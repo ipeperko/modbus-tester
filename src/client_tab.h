@@ -49,7 +49,7 @@ private slots:
 private:
     rtu_widget* rtu_widget_{nullptr};
     IPv4_validator* ip4_validator{nullptr};
-    Ui::ClientForm* ui{nullptr};
+    std::unique_ptr<Ui::ClientForm> ui;
     std::unique_ptr<client_session> client_;
 
 signals:

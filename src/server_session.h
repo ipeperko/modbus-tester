@@ -15,16 +15,14 @@ public:
     ~server_session() override;
 
     void start_server();
-    void stop_server();
+    virtual void stop_server();
 
     modbus_mapping_t& mb_map;
 
-private:
-    void task();
+protected:
+    virtual void task() {}
     int server_reply(const std::vector<uint8_t>& query);
 
-    int sock_listen {-1};
-    int sock_accept {-1};
     std::thread thr;
     std::atomic<bool> do_run {false};
 
@@ -41,6 +39,28 @@ class server_session_tcp : public server_session
 {
 public:
     server_session_tcp(int port, modbus_mapping_t& map);
+
+    void stop_server() override;
+
+private:
+    void task() override;
+
+    int sock_listen {-1};
+    int sock_accept {-1};
+};
+
+//
+// Server session RTU
+//
+class server_session_rtu : public server_session
+{
+public:
+    server_session_rtu(const QString& tty, mb_rtu_type type, int baud, char parity, int data_bit, int stop_bit, int rts, modbus_mapping_t& map);
+
+    void stop_server() override;
+
+private:
+    void task() override;
 };
 
 #endif //MODBUS_TESTER_SERVER_SESSION_H

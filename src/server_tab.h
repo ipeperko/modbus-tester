@@ -9,6 +9,7 @@ class ServerForm;
 }
 
 class server_reg_model;
+class rtu_widget;
 
 class server_tab : public QWidget
 {
@@ -25,7 +26,8 @@ private:
     void append_log_msg(const QString& msg);
     void append_log_error(const QString& msg);
 
-    Ui::ServerForm* ui {nullptr};
+    rtu_widget* rtu_widget_{nullptr};
+    std::unique_ptr<Ui::ServerForm> ui;
     std::unique_ptr<server_session> server;
     server_reg_model* reg_model;
 
