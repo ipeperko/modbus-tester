@@ -42,3 +42,4 @@ include_directories(
 
 add_executable(${PROJECT_NAME} ${SOURCES} resources.qrc)
 target_link_libraries(${PROJECT_NAME} ${LIBS})
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
